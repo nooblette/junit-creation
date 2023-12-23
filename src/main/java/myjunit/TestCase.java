@@ -15,7 +15,7 @@ import myjunit.result.TestResult;
 * 	TestCase 객체는 그 자체로 사용 하기 보다는, 구체적인 테스트 케이스들이 이를 상속하여 사용하기 때문에 추상 클래스(Abstract Class)로 선언한다.
 * 	이를 통해 각각의 테스트는 새로운 인스턴스에서 독립적으로 수행된다.
 */
-public abstract class TestCase {
+public abstract class TestCase implements Test{
 	private static final Logger logger = LoggerFactory.getLogger(TestCase.class);
 
 	// 각 TestCase를 식별하기 위한 이름, 생성자를 통해 받는다.
@@ -24,7 +24,6 @@ public abstract class TestCase {
 	public TestCase(String testCaseName){
 		this.testCaseName = testCaseName;
 	}
-
 	public TestResult run(){
 		TestResult testResult = createTestResult();
 		run(testResult);
@@ -33,6 +32,7 @@ public abstract class TestCase {
 	}
 
 	// run() 메서드는 before() -> runTestCase() -> after() 순으로 테스트를 실행한다.
+	@Override
 	public void run(TestResult testResult){
 		testResult.startTest();
 		before();

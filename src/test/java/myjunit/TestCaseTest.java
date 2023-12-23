@@ -26,9 +26,14 @@ public class TestCaseTest extends TestCase {
 	}
 
 	public static void main(String[] args) {
+		TestSuite testSuite = new TestSuite();
+		testSuite.addTestCase(new TestCaseTest("runPlusTest"));
+		testSuite.addTestCase(new TestCaseTest("runMinusTest"));
+
+		// 테스트 케이스 검증
 		TestResult testResult = new TestResult();
-		new TestCaseTest("runPlusTest").run(testResult);
-		new TestCaseTest("runMinusTest").run(testResult);
+		testSuite.run(testResult);
+
 		testResult.printCount();
 	}
 }
