@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import myjunit.result.TestResult;
+
 /*
 * 테스트 프레임워크로써 기능을 수행하기 위해, 각각 테스트 케이스 단위로 요청을 나눌 수 있도록 구성(Command Pattern)
 * 	각각의 테스트 케이스를 Command 로 보고, run 메서드가 이러한 테스트 케이스 실행을 담당한다.
@@ -21,11 +23,23 @@ public abstract class TestCase {
 		this.testCaseName = testCaseName;
 	}
 
+	public TestResult run(){
+		TestResult testResult = createTestResult();
+		run(testResult);
+
+		return testResult;
+	}
+
 	// run() 메서드는 before() -> runTestCase() -> after() 순으로 테스트를 실행한다.
-	public void run(){
+	public void run(TestResult testResult){
+		testResult.startTest();
 		before();
 		runTestCase();
 		after();
+	}
+
+	private TestResult createTestResult(){
+		return new TestResult();
 	}
 
 	// before() 메서드와 after() 메서드는 추상 메서드가 아니라 일반 메서드임에 유의한다.

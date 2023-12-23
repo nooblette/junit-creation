@@ -1,6 +1,7 @@
 package myjunit;
 
 import myjunit.assertion.Assert;
+import myjunit.result.TestResult;
 
 public class TestCaseTest extends TestCase {
 	private static long base;
@@ -25,7 +26,9 @@ public class TestCaseTest extends TestCase {
 	}
 
 	public static void main(String[] args) {
-		new TestCaseTest("runPlusTest").run();
-		new TestCaseTest("runMinusTest").run();
+		TestResult testResult = new TestResult();
+		new TestCaseTest("runPlusTest").run(testResult);
+		new TestCaseTest("runMinusTest").run(testResult);
+		testResult.printCount();
 	}
 }
