@@ -1,10 +1,12 @@
 package myjunit;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import myjunit.assertion.AssertionFailedError;
 import myjunit.result.TestResult;
 
 /*
@@ -14,7 +16,7 @@ import myjunit.result.TestResult;
 * 	이를 통해 각각의 테스트는 새로운 인스턴스에서 독립적으로 수행된다.
 */
 public abstract class TestCase {
-	private static final Logger logger = LoggerFactory.getLogger(TestCaseTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(TestCase.class);
 
 	// 각 TestCase를 식별하기 위한 이름, 생성자를 통해 받는다.
 	protected String testCaseName;
@@ -34,8 +36,23 @@ public abstract class TestCase {
 	public void run(TestResult testResult){
 		testResult.startTest();
 		before();
-		runTestCase();
-		after();
+		try {
+			runTestCase();
+		} catch (InvocationTargetException invocationTargetException){
+			if(isAssertionFailed((invocationTargetException))){
+				testResult.addFailure(this);
+			} else {
+				testResult.addError(this, invocationTargetException);
+			}
+		} catch (Exception exception){
+			testResult.addError(this, exception);
+		} finally {
+			after();
+		}
+	}
+
+	private boolean isAssertionFailed(InvocationTargetException invocationTargetException){
+		return invocationTargetException.getTargetException() instanceof AssertionFailedError;
 	}
 
 	private TestResult createTestResult(){
@@ -46,15 +63,15 @@ public abstract class TestCase {
 	// 추상 메서드는 자식 클래스에서 항상 오버라이딩해야하나, Fixture() 메서드의 구현은 강제가 아닌 선택이기 때문
 	protected void before() {}
 
-	private void runTestCase(){
-		try{
-			logger.info("{} execute", testCaseName);
-			Method method = this.getClass().getMethod(testCaseName, null);
-			method.invoke(this, null);
-		} catch (Exception e){
-			throw new RuntimeException(e);
-		}
+	private void runTestCase() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+		logger.info("{} execute", testCaseName); // 테스트 케이스들 구별을 위해 name 출력 코드
+		Method method = this.getClass().getMethod(testCaseName, null);
+		method.invoke(this, null);
 	}
 
 	protected void after() {}
+
+	public String getTestCaseName(){
+		return testCaseName;
+	}
 }
