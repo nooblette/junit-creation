@@ -21,7 +21,18 @@ public abstract class TestCase {
 		this.testCaseName = testCaseName;
 	}
 
+	// run() 메서드는 before() -> runTestCase() -> after() 순으로 테스트를 실행한다.
 	public void run(){
+		before();
+		runTestCase();
+		after();
+	}
+
+	// before() 메서드와 after() 메서드는 추상 메서드가 아니라 일반 메서드임에 유의한다.
+	// 추상 메서드는 자식 클래스에서 항상 오버라이딩해야하나, Fixture() 메서드의 구현은 강제가 아닌 선택이기 때문
+	protected void before() {}
+
+	private void runTestCase(){
 		try{
 			logger.info("{} execute", testCaseName);
 			Method method = this.getClass().getMethod(testCaseName, null);
@@ -30,4 +41,6 @@ public abstract class TestCase {
 			throw new RuntimeException(e);
 		}
 	}
+
+	protected void after() {}
 }

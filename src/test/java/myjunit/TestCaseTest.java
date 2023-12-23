@@ -3,26 +3,24 @@ package myjunit;
 import myjunit.assertion.Assert;
 
 public class TestCaseTest extends TestCase {
+	private static long base;
 
 	public TestCaseTest(String testCaseName){
 		super(testCaseName); // 부모 객체인 TestCase의 생성자 호출
 	}
 
-	private static long base;
-
+	@Override
 	public void before(){
 		base = 10;
 	}
 
 	public void runPlusTest() {
-		before(); // 각각의 테스트 메서드들이 테스트 전에 before() Fixture 메서드를 수행
-		long sum = 10 + 10;
+		long sum = 10 + base;
 		Assert.assertTrue(sum == 20);
 	}
 
 	public void runMinusTest() {
-		before();
-		long sum = 100 - 10;
+		long sum = 100 - base;
 		Assert.assertTrue(sum == 90);
 	}
 
